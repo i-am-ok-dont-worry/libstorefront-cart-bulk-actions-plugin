@@ -1,19 +1,55 @@
-# NAMING CONVENTIONS
-* `name` property in package.json should be changed to a module name
-* `description` property in package.json should describe plugin feature
+# Cart bulk actions plugin
+Plugin provides support for bulk actions on quote items such as:
+- add to cart multiple products
+- update multiple cart items
+- delete multiple cart items
+- clear quote
 
-## Write plugin
-Entry point for plugin should be `index.ts` file. LSF plugin is a default void function 
-that accepts initialized Libstorefront instance.
+## Usage
+To use plugin add a dependency to the LSF lib:
+```javascript
+const LSF = new LibStorefront({
+    plugins: [
+        CartBulkActionsPlugin
+    ]
+});
+```
 
-Plugin has access to all lsf functionality including IOC container. Dependencies
-can be rebound according to plugin needs.
+and get `CartBulkService` registered by lib:
+```javascript
+LSF.get(CartBulkService)
+```
+
+## Add multiple products to cart
+To add multiple products at once:
+```javascript
+await LSF.get(CartBulkService).addBulk(items);
+```
+
+## Update multiple products in cart
+To update multiple products at once:
+```javascript
+await LSF.get(CartBulkService).updateBulk(items);
+```
+
+## Delete multiple products in cart
+To delete multiple cart items from cart:
+```javascript
+await LSF.get(CartBulkService).deleteBulk(items);
+```
+
+## Clear cart
+To clear cart call `deleteBulk` method with no param
+```javascript
+await LSF.get(CartBulkService).deleteBulk();
+```
 
 ## Build plugin
 Run `npm run build` to build plugin.
 Output can be found in `/dist` catalog.
 
 ## Test plugin
-Plugin must be tested in isolation. Unit tests can be performed via jest framework
-in `/tests/test.ts` file.
-Template includes by default mocked LocalStorage object.
+Plugin can be tested in isolation. To run plugin integration test:
+```shell script
+npm run test:integration
+```

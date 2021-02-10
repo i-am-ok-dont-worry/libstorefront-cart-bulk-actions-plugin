@@ -1,7 +1,7 @@
 {
-  "name": "libstorefront-plugin-template",
+  "name": "@grupakmk/libstorefront-cart-bulk-actions-plugin",
   "version": "1.0.0",
-  "description": "Plugin template for Libstorefront",
+  "description": "Plugin for handling bulk actions on cart",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
@@ -24,7 +24,7 @@
   },
   "homepage": "https://gitlab.com/mateuspytel/libstorefront-plugin-template#readme",
   "dependencies": {
-    "@grupakmk/libstorefront": "^1.0.0"
+    "@grupakmk/libstorefront": "^1.0.6"
   },
   "devDependencies": {
     "babel-loader": "^8.2.2",
