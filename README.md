@@ -44,6 +44,12 @@ To clear cart call `deleteBulk` method with no param
 await LSF.get(CartBulkService).deleteBulk();
 ```
 
+## Reorder
+To add all items from selected order to the current cart
+```javascript
+await LSF.get(CartBulkService).reorder(order.increment_id);
+```
+
 ## Build plugin
 Run `npm run build` to build plugin.
 Output can be found in `/dist` catalog.
