@@ -40,5 +40,21 @@ export declare class CartBulkService {
      * @returns {Promise<{ added: { sku: string, qty: string, item_id: string }, error: { sku: string, error: string } }}
      */
     deleteBulk(items?: CartItem[]): Promise<CartItem[]>;
+    /**
+     * Adds order items to the current quote
+     * @param {string} orderIncrementId
+     * @returns {Promise<unknown>}
+     */
+    reorder(orderIncrementId: string): Promise<{
+        added: {
+            sku: string;
+            qty: string;
+            item_id: string;
+        };
+        error: {
+            sku: string;
+            error: string;
+        };
+    }>;
     constructor(store: AbstractStore<LibstorefrontInnerState>);
 }

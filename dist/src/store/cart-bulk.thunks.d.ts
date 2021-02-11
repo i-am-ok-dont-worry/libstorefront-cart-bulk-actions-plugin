@@ -6,6 +6,10 @@ export declare namespace CartBulkThunks {
     }>;
     const updateBulk: (items: CartItem[]) => (dispatch: any, getState: any) => Promise<void>;
     const deleteBulk: (items?: CartItem[]) => (dispatch: any, getState: any) => Promise<void>;
+    const reorder: (orderIncrementId: string) => (dispatch: any, getState: any) => Promise<{
+        added: any;
+        error: any;
+    }>;
     /**
      * Checks if quote is valid and has a valid cart server token.
      * If not new quote will be created as user quote or guest quote.

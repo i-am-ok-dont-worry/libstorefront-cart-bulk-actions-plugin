@@ -103,6 +103,31 @@ export namespace CartBulkThunks {
         }
     };
 
+    export const reorder = (orderIncrementId: string) => async (dispatch, getState) => {
+      try {
+          if (!orderIncrementId) { throw new Error('Invalid argument. orderIncrementId must be defined'); }
+          await CartUtils.assertNotLocked();
+          await dispatch(assertValidQuote());
+          await dispatch(CartActions.setActionLock(true));
+
+          const cartToken = getState().cart.cartServerToken;
+          const response = await IOCContainer.get(CartBulkDao).reorder(cartToken, orderIncrementId);
+
+          if (response && response.code === HttpStatus.OK) {
+              const { result } = response;
+              const [addedProducts, erroredProducts] = partition(result, (el) => !el.hasOwnProperty('error'));
+              await IOCContainer.get(CartService).loadCart();
+
+              return {
+                  added: addedProducts,
+                  error: erroredProducts
+              };
+          }
+      } catch (e) {
+          Logger.warn(`Cannot reorder ${orderIncrementId}.`, 'cart-bulk-actions-plugin', e.message);
+      }
+    };
+
     /**
      * Checks if quote is valid and has a valid cart server token.
      * If not new quote will be created as user quote or guest quote.

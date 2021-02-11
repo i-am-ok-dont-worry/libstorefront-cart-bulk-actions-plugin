@@ -33,5 +33,14 @@ export class CartBulkService {
         return this.store.dispatch(CartBulkThunks.deleteBulk(items));
     }
 
+    /**
+     * Adds order items to the current quote
+     * @param {string} orderIncrementId
+     * @returns {Promise<unknown>}
+     */
+    public reorder (orderIncrementId: string): Promise<{ added: { sku: string, qty: string, item_id: string }, error: { sku: string, error: string } }> {
+        return this.store.dispatch(CartBulkThunks.reorder(orderIncrementId));
+    }
+
     public constructor(@inject(AbstractStore) private store: AbstractStore<LibstorefrontInnerState>) {}
 }

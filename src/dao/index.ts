@@ -30,5 +30,17 @@ export class CartBulkDao {
         });
     }
 
+    public reorder (cartId, orderIncrementId: string): Promise<Task> {
+        return this.taskQueue.execute({
+            url: URLTransform.getAbsoluteApiUrl('/api/vendor/cart-bulk/' + cartId + '/reorder/' + orderIncrementId + '?token={{token}}&storeCode={{storeCode}}'),
+            payload: {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                mode: 'cors',
+            },
+            silent: true
+        })
+    }
+
     public constructor(@inject(TaskQueue) private taskQueue) {}
 }

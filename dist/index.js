@@ -176,6 +176,17 @@ var CartBulkDao = /** @class */ (function () {
             silent: true
         });
     };
+    CartBulkDao.prototype.reorder = function (cartId, orderIncrementId) {
+        return this.taskQueue.execute({
+            url: libstorefront_1.URLTransform.getAbsoluteApiUrl('/api/vendor/cart-bulk/' + cartId + '/reorder/' + orderIncrementId + '?token={{token}}&storeCode={{storeCode}}'),
+            payload: {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                mode: 'cors',
+            },
+            silent: true
+        });
+    };
     CartBulkDao = __decorate([
         inversify_1.injectable(),
         __param(0, inversify_1.inject(libstorefront_1.TaskQueue)),
@@ -267,6 +278,14 @@ var CartBulkService = /** @class */ (function () {
      */
     CartBulkService.prototype.deleteBulk = function (items) {
         return this.store.dispatch(cart_bulk_thunks_1.CartBulkThunks.deleteBulk(items));
+    };
+    /**
+     * Adds order items to the current quote
+     * @param {string} orderIncrementId
+     * @returns {Promise<unknown>}
+     */
+    CartBulkService.prototype.reorder = function (orderIncrementId) {
+        return this.store.dispatch(cart_bulk_thunks_1.CartBulkThunks.reorder(orderIncrementId));
     };
     CartBulkService = __decorate([
         inversify_1.injectable(),
@@ -499,12 +518,53 @@ var CartBulkThunks;
             }
         });
     }); }; };
+    CartBulkThunks.reorder = function (orderIncrementId) { return function (dispatch, getState) { return __awaiter(_this, void 0, void 0, function () {
+        var cartToken, response, result, _a, addedProducts, erroredProducts, e_4;
+        return __generator(this, function (_b) {
+            switch (_b.label) {
+                case 0:
+                    _b.trys.push([0, 7, , 8]);
+                    if (!orderIncrementId) {
+                        throw new Error('Invalid argument. orderIncrementId must be defined');
+                    }
+                    return [4 /*yield*/, libstorefront_1.CartUtils.assertNotLocked()];
+                case 1:
+                    _b.sent();
+                    return [4 /*yield*/, dispatch(CartBulkThunks.assertValidQuote())];
+                case 2:
+                    _b.sent();
+                    return [4 /*yield*/, dispatch(libstorefront_1.CartActions.setActionLock(true))];
+                case 3:
+                    _b.sent();
+                    cartToken = getState().cart.cartServerToken;
+                    return [4 /*yield*/, libstorefront_1.IOCContainer.get(dao_1.CartBulkDao).reorder(cartToken, orderIncrementId)];
+                case 4:
+                    response = _b.sent();
+                    if (!(response && response.code === libstorefront_1.HttpStatus.OK)) return [3 /*break*/, 6];
+                    result = response.result;
+                    _a = partition_1.default(result, function (el) { return !el.hasOwnProperty('error'); }), addedProducts = _a[0], erroredProducts = _a[1];
+                    return [4 /*yield*/, libstorefront_1.IOCContainer.get(libstorefront_1.CartService).loadCart()];
+                case 5:
+                    _b.sent();
+                    return [2 /*return*/, {
+                            added: addedProducts,
+                            error: erroredProducts
+                        }];
+                case 6: return [3 /*break*/, 8];
+                case 7:
+                    e_4 = _b.sent();
+                    libstorefront_1.Logger.warn("Cannot reorder " + orderIncrementId + ".", 'cart-bulk-actions-plugin', e_4.message);
+                    return [3 /*break*/, 8];
+                case 8: return [2 /*return*/];
+            }
+        });
+    }); }; };
     /**
      * Checks if quote is valid and has a valid cart server token.
      * If not new quote will be created as user quote or guest quote.
      */
     CartBulkThunks.assertValidQuote = function () { return function (dispatch, getState) { return __awaiter(_this, void 0, void 0, function () {
-        var store, token, e_4, user, guestCart;
+        var store, token, e_5, user, guestCart;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -517,7 +577,7 @@ var CartBulkThunks;
                     token = _a.sent();
                     return [2 /*return*/, token];
                 case 3:
-                    e_4 = _a.sent();
+                    e_5 = _a.sent();
                     user = store.getState().user.current;
                     guestCart = !user;
                     return [4 /*yield*/, libstorefront_1.IOCContainer.get(libstorefront_1.CartService).createCart({ guestCart: guestCart })];

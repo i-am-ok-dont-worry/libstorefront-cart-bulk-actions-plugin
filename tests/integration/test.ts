@@ -16,10 +16,17 @@ const LSF = new LibStorefront({
     // await LSF.CartService.createCart({ guestCart: false });
     const query = QueryUtils.fromPhrase('maska');
     const response = await LSF.SearchClient.searchByQuery({ query });
-    await LSF.get(CartBulkService).addBulk(response.items);
+
+    await LSF.UserService.login('test@grupakmk.pl', 'Testowe3!');
+    const orders = await LSF.UserService.getOrdersHistory({});
+    const order = orders.result.items[0];
+
+    await LSF.get(CartBulkService).reorder(order.increment_id);
+    debugger;
+    /*await LSF.get(CartBulkService).addBulk(response.items);
 
     const items = LSF.getStore().getState().cart.cartItems;
     const firstTwo = [items[0], items[1]];
 
-    await LSF.get(CartBulkService).deleteBulk();
+    await LSF.get(CartBulkService).deleteBulk();*/
 })();
