@@ -1,4 +1,4 @@
-import { AbstractStore, CartItem, LibstorefrontInnerState, Product } from '@grupakmk/libstorefront';
+import { AbstractStore, CartItem, LibstorefrontInnerState, MinimalProduct } from '@grupakmk/libstorefront';
 export declare class CartBulkService {
     private store;
     /**
@@ -6,7 +6,7 @@ export declare class CartBulkService {
      * @param {Product[]} items
      * @returns {Promise<{ added: { sku: string, qty: string, item_id: string }, error: { sku: string, error: string } }}
      */
-    addBulk(items: Product[]): Promise<{
+    addBulk(items: MinimalProduct[]): Promise<{
         added: {
             sku: string;
             qty: string;

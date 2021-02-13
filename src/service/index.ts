@@ -1,5 +1,5 @@
 import { injectable, inject } from 'inversify';
-import { AbstractStore, CartItem, LibstorefrontInnerState, Product } from '@grupakmk/libstorefront';
+import { AbstractStore, CartItem, LibstorefrontInnerState, MinimalProduct } from '@grupakmk/libstorefront';
 import { CartBulkThunks } from '../store/cart-bulk.thunks';
 
 @injectable()
@@ -10,7 +10,7 @@ export class CartBulkService {
      * @param {Product[]} items
      * @returns {Promise<{ added: { sku: string, qty: string, item_id: string }, error: { sku: string, error: string } }}
      */
-    public addBulk (items: Product[]): Promise<{ added: { sku: string, qty: string, item_id: string }, error: { sku: string, error: string } }> {
+    public addBulk (items: MinimalProduct[]): Promise<{ added: { sku: string, qty: string, item_id: string }, error: { sku: string, error: string } }> {
         return this.store.dispatch(CartBulkThunks.addBulk(items));
     }
 

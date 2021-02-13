@@ -1,6 +1,6 @@
-import { CartItem, Product } from '@grupakmk/libstorefront';
+import { CartItem, MinimalProduct } from '@grupakmk/libstorefront';
 export declare namespace CartBulkThunks {
-    const addBulk: (items: Product[], overwriteQty?: boolean) => (dispatch: any, getState: any) => Promise<{
+    const addBulk: (items: MinimalProduct[], overwriteQty?: boolean) => (dispatch: any, getState: any) => Promise<{
         added: any;
         error: any;
     }>;

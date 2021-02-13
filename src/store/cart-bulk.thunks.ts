@@ -8,14 +8,14 @@ import {
     CartActions,
     prepareProductsToAdd,
     AbstractStore, CartService, HttpStatus, StorageCollection, StorageCollectionKeys,
-    StorageManager
+    StorageManager, MinimalProduct
 } from '@grupakmk/libstorefront';
-import { CartBulkDao } from "../dao";
+import { CartBulkDao } from '../dao';
 import partition from 'lodash/partition';
 
 export namespace CartBulkThunks {
 
-    export const addBulk = (items: Product[], overwriteQty?: boolean) => async (dispatch, getState) => {
+    export const addBulk = (items: MinimalProduct[], overwriteQty?: boolean) => async (dispatch, getState) => {
         try {
             if (!Array.isArray(items)) { throw new Error('Invalid argument. Items must be an array'); }
 
@@ -24,7 +24,7 @@ export namespace CartBulkThunks {
             await dispatch(assertValidQuote());
             await dispatch(CartActions.setActionLock(true));
 
-            const productsToSync = prepareProductsToAdd(items);
+            const productsToSync = prepareProductsToAdd(items as Product[]);
             await dispatch(CartActions.cartAddingItem(true));
 
             const cartToken = getState().cart.cartServerToken;
