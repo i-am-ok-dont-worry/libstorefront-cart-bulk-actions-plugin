@@ -256,7 +256,7 @@ var CartBulkService = /** @class */ (function () {
     }
     /**
      * Adds multiple products to the cart at once
-     * @param {Product[]} items
+     * @param {MinimalProduct[]} items
      * @returns {Promise<{ added: { sku: string, qty: string, item_id: string }, error: { sku: string, error: string } }}
      */
     CartBulkService.prototype.addBulk = function (items) {
@@ -523,7 +523,7 @@ var CartBulkThunks;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
-                    _b.trys.push([0, 7, , 8]);
+                    _b.trys.push([0, 8, , 10]);
                     if (!orderIncrementId) {
                         throw new Error('Invalid argument. orderIncrementId must be defined');
                     }
@@ -540,22 +540,28 @@ var CartBulkThunks;
                     return [4 /*yield*/, libstorefront_1.IOCContainer.get(dao_1.CartBulkDao).reorder(cartToken, orderIncrementId)];
                 case 4:
                     response = _b.sent();
-                    if (!(response && response.code === libstorefront_1.HttpStatus.OK)) return [3 /*break*/, 6];
+                    if (!(response && response.code === libstorefront_1.HttpStatus.OK)) return [3 /*break*/, 7];
                     result = response.result;
                     _a = partition_1.default(result, function (el) { return !el.hasOwnProperty('error'); }), addedProducts = _a[0], erroredProducts = _a[1];
                     return [4 /*yield*/, libstorefront_1.IOCContainer.get(libstorefront_1.CartService).loadCart()];
                 case 5:
                     _b.sent();
+                    return [4 /*yield*/, dispatch(libstorefront_1.CartActions.setActionLock(false))];
+                case 6:
+                    _b.sent();
                     return [2 /*return*/, {
                             added: addedProducts,
                             error: erroredProducts
                         }];
-                case 6: return [3 /*break*/, 8];
-                case 7:
+                case 7: return [3 /*break*/, 10];
+                case 8:
                     e_4 = _b.sent();
                     libstorefront_1.Logger.warn("Cannot reorder " + orderIncrementId + ".", 'cart-bulk-actions-plugin', e_4.message);
-                    return [3 /*break*/, 8];
-                case 8: return [2 /*return*/];
+                    return [4 /*yield*/, dispatch(libstorefront_1.CartActions.setActionLock(false))];
+                case 9:
+                    _b.sent();
+                    return [3 /*break*/, 10];
+                case 10: return [2 /*return*/];
             }
         });
     }); }; };

@@ -117,6 +117,7 @@ export namespace CartBulkThunks {
               const { result } = response;
               const [addedProducts, erroredProducts] = partition(result, (el) => !el.hasOwnProperty('error'));
               await IOCContainer.get(CartService).loadCart();
+              await dispatch(CartActions.setActionLock(false));
 
               return {
                   added: addedProducts,
@@ -125,6 +126,7 @@ export namespace CartBulkThunks {
           }
       } catch (e) {
           Logger.warn(`Cannot reorder ${orderIncrementId}.`, 'cart-bulk-actions-plugin', e.message);
+          await dispatch(CartActions.setActionLock(false));
       }
     };
 

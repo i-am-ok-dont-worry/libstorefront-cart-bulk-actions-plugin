@@ -3,7 +3,7 @@ export declare class CartBulkService {
     private store;
     /**
      * Adds multiple products to the cart at once
-     * @param {Product[]} items
+     * @param {MinimalProduct[]} items
      * @returns {Promise<{ added: { sku: string, qty: string, item_id: string }, error: { sku: string, error: string } }}
      */
     addBulk(items: MinimalProduct[]): Promise<{
