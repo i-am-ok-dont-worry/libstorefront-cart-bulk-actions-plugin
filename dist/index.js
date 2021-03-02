@@ -648,7 +648,7 @@ var CartBulkThunks;
                         cartItems = products.map(function (cartItem) {
                             var serverItem = result.items.find(function (ci) { return ci.sku === cartItem.sku; });
                             var output = serverItem ? __assign(__assign({}, cartItem), serverItem) : cartItem;
-                            return libstorefront_1.ProductUtils.pickMinimalProductObject(output);
+                            return __assign(__assign({}, libstorefront_1.ProductUtils.pickMinimalProductObject(output)), serverItem);
                         });
                         return [2 /*return*/, cartItems];
                     }

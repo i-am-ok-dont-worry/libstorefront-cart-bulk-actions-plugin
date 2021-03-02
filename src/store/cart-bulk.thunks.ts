@@ -178,7 +178,7 @@ export namespace CartBulkThunks {
                 const serverItem = result.items.find(ci => ci.sku === cartItem.sku);
                 const output = serverItem ? { ...cartItem, ...serverItem } : cartItem;
 
-                return ProductUtils.pickMinimalProductObject(output);
+                return { ...ProductUtils.pickMinimalProductObject(output), ...serverItem }
             });
 
             return cartItems as any as CartItem[];
