@@ -523,7 +523,7 @@ var CartBulkThunks;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
-                    _b.trys.push([0, 8, , 10]);
+                    _b.trys.push([0, 10, , 12]);
                     if (!orderIncrementId) {
                         throw new Error('Invalid argument. orderIncrementId must be defined');
                     }
@@ -540,28 +540,33 @@ var CartBulkThunks;
                     return [4 /*yield*/, libstorefront_1.IOCContainer.get(dao_1.CartBulkDao).reorder(cartToken, orderIncrementId)];
                 case 4:
                     response = _b.sent();
-                    if (!(response && response.code === libstorefront_1.HttpStatus.OK)) return [3 /*break*/, 7];
+                    if (!(response && response.code === libstorefront_1.HttpStatus.OK)) return [3 /*break*/, 9];
                     result = response.result;
                     _a = partition_1.default(result, function (el) { return !el.hasOwnProperty('error'); }), addedProducts = _a[0], erroredProducts = _a[1];
-                    return [4 /*yield*/, libstorefront_1.IOCContainer.get(libstorefront_1.CartService).loadCart()];
+                    if (!(erroredProducts && erroredProducts.length)) return [3 /*break*/, 6];
+                    return [4 /*yield*/, dispatch(CartBulkThunks.expandProducts(erroredProducts))];
                 case 5:
+                    erroredProducts = _b.sent();
+                    _b.label = 6;
+                case 6: return [4 /*yield*/, libstorefront_1.IOCContainer.get(libstorefront_1.CartService).loadCart()];
+                case 7:
                     _b.sent();
                     return [4 /*yield*/, dispatch(libstorefront_1.CartActions.setActionLock(false))];
-                case 6:
+                case 8:
                     _b.sent();
                     return [2 /*return*/, {
                             added: addedProducts,
                             error: erroredProducts
                         }];
-                case 7: return [3 /*break*/, 10];
-                case 8:
+                case 9: return [3 /*break*/, 12];
+                case 10:
                     e_4 = _b.sent();
                     libstorefront_1.Logger.warn("Cannot reorder " + orderIncrementId + ".", 'cart-bulk-actions-plugin', e_4.message);
                     return [4 /*yield*/, dispatch(libstorefront_1.CartActions.setActionLock(false))];
-                case 9:
+                case 11:
                     _b.sent();
-                    return [3 /*break*/, 10];
-                case 10: return [2 /*return*/];
+                    return [3 /*break*/, 12];
+                case 12: return [2 /*return*/];
             }
         });
     }); }; };
@@ -621,6 +626,35 @@ var CartBulkThunks;
                 case 5:
                     _a.sent();
                     libstorefront_1.Logger.info('Synchronization complete', 'sync');
+                    return [2 /*return*/];
+            }
+        });
+    }); }; };
+    CartBulkThunks.expandProducts = function (products) { return function (dispatch, getState) { return __awaiter(_this, void 0, void 0, function () {
+        var skus, query, result, cartItems;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    skus = products.map(function (_a) {
+                        var sku = _a.sku;
+                        return sku;
+                    });
+                    query = new libstorefront_1.SearchQuery();
+                    query.applyFilter({ key: 'sku', value: { in: skus } });
+                    return [4 /*yield*/, libstorefront_1.IOCContainer.get(libstorefront_1.ProductService).getProducts({ query: query })];
+                case 1:
+                    result = _a.sent();
+                    if (result && result.items.length) {
+                        cartItems = products.map(function (cartItem) {
+                            var serverItem = result.items.find(function (ci) { return ci.sku === cartItem.sku; });
+                            var output = serverItem ? __assign(__assign({}, cartItem), serverItem) : cartItem;
+                            return libstorefront_1.ProductUtils.pickMinimalProductObject(output);
+                        });
+                        return [2 /*return*/, cartItems];
+                    }
+                    else {
+                        return [2 /*return*/, products];
+                    }
                     return [2 /*return*/];
             }
         });

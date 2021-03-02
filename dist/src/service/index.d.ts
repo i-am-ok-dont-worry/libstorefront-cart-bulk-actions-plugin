@@ -50,11 +50,8 @@ export declare class CartBulkService {
             sku: string;
             qty: string;
             item_id: string;
-        };
-        error: {
-            sku: string;
-            error: string;
-        };
+        }[];
+        error: MinimalProduct[];
     }>;
     constructor(store: AbstractStore<LibstorefrontInnerState>);
 }

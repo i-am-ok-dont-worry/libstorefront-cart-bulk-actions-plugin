@@ -1,4 +1,4 @@
-import { CartItem, MinimalProduct } from '@grupakmk/libstorefront';
+import { CartItem, Product, MinimalProduct } from '@grupakmk/libstorefront';
 export declare namespace CartBulkThunks {
     const addBulk: (items: MinimalProduct[], overwriteQty?: boolean) => (dispatch: any, getState: any) => Promise<{
         added: any;
@@ -19,4 +19,5 @@ export declare namespace CartBulkThunks {
      * Asserts local cart state is in sync with Magento and localstorage
      */
     const syncCartLocalState: () => (dispatch: any, getState: any) => Promise<void>;
+    const expandProducts: (products: Partial<Product>[]) => (dispatch: any, getState: any) => Promise<Partial<Product>[]>;
 }
