@@ -9,8 +9,8 @@ const LSF = new LibStorefront({
     plugins: [
         CartBulkActionsPlugin
     ]
-}, 'http://localhost:9001');
-// }, 'https://api.meringer.staging.grupakmk.pl');
+// }, 'http://localhost:9001');
+}, 'https://api.meringer.staging.grupakmk.pl');
 
 (async () => {
     // await LSF.CartService.createCart({ guestCart: false });
@@ -21,7 +21,7 @@ const LSF = new LibStorefront({
     const orders = await LSF.UserService.getOrdersHistory({});
     const order = orders.result.items[0];
 
-    await LSF.get(CartBulkService).reorder(order.increment_id);
+    const res = await LSF.get(CartBulkService).reorder(order.increment_id);
     debugger;
     /*await LSF.get(CartBulkService).addBulk(response.items);
 

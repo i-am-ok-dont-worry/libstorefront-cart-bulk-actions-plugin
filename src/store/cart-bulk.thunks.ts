@@ -8,7 +8,7 @@ import {
     CartActions,
     prepareProductsToAdd,
     AbstractStore, CartService, HttpStatus, StorageCollection, StorageCollectionKeys,
-    StorageManager, MinimalProduct
+    StorageManager, MinimalProduct, SearchQuery, ProductUtils, ProductService
 } from '@grupakmk/libstorefront';
 import { CartBulkDao } from '../dao';
 import partition from 'lodash/partition';
@@ -115,7 +115,12 @@ export namespace CartBulkThunks {
 
           if (response && response.code === HttpStatus.OK) {
               const { result } = response;
-              const [addedProducts, erroredProducts] = partition(result, (el) => !el.hasOwnProperty('error'));
+              let [addedProducts, erroredProducts] = partition(result, (el) => !el.hasOwnProperty('error'));
+
+              if (erroredProducts && erroredProducts.length) {
+                  erroredProducts = await dispatch(expandProducts(erroredProducts));
+              }
+
               await IOCContainer.get(CartService).loadCart();
               await dispatch(CartActions.setActionLock(false));
 
@@ -160,5 +165,25 @@ export namespace CartBulkThunks {
         await dispatch(CartActions.setItemsHash(currentCartHash));
 
         Logger.info('Synchronization complete', 'sync');
+    };
+
+    export const expandProducts = (products: Partial<Product>[]) => async (dispatch, getState) => {
+        const skus = products.map(({ sku }) => sku);
+        const query = new SearchQuery();
+        query.applyFilter({ key: 'sku', value: { in: skus } });
+        const result = await IOCContainer.get(ProductService).getProducts({ query });
+
+        if (result && result.items.length) {
+            const cartItems = products.map((cartItem) => {
+                const serverItem = result.items.find(ci => ci.sku === cartItem.sku);
+                const output = serverItem ? { ...cartItem, ...serverItem } : cartItem;
+
+                return ProductUtils.pickMinimalProductObject(output);
+            });
+
+            return cartItems as any as CartItem[];
+        } else {
+            return products;
+        }
     };
 }

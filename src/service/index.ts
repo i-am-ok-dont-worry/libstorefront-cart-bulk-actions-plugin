@@ -38,7 +38,7 @@ export class CartBulkService {
      * @param {string} orderIncrementId
      * @returns {Promise<unknown>}
      */
-    public reorder (orderIncrementId: string): Promise<{ added: { sku: string, qty: string, item_id: string }, error: { sku: string, error: string } }> {
+    public reorder (orderIncrementId: string): Promise<{ added: { sku: string, qty: string, item_id: string }[], error: MinimalProduct[] }> {
         return this.store.dispatch(CartBulkThunks.reorder(orderIncrementId));
     }
 
