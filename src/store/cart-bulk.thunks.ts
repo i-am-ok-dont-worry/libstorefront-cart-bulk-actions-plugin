@@ -174,11 +174,11 @@ export namespace CartBulkThunks {
         const result = await IOCContainer.get(ProductService).getProducts({ query });
 
         if (result && result.items.length) {
-            const cartItems = products.map((cartItem) => {
+            const cartItems = products.map((cartItem: Partial<Product> & { error: string }) => {
                 const serverItem = result.items.find(ci => ci.sku === cartItem.sku);
                 const output = serverItem ? { ...cartItem, ...serverItem } : cartItem;
 
-                return { ...ProductUtils.pickMinimalProductObject(output), ...serverItem }
+                return { ...ProductUtils.pickMinimalProductObject(output), error: cartItem.error }
             });
 
             return cartItems as any as CartItem[];
